@@ -7,6 +7,7 @@ import org.example.metabox.movie.Movie;
 import org.example.metabox.movie.MovieRequest;
 import org.example.metabox.movie.MovieResponse;
 import org.example.metabox.movie.MovieService;
+import org.hibernate.Session;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +28,9 @@ public class AdminController {
     @PostMapping("admin-login")
     public String adminLogin(AdminRequest.LoginDTO reqDTO) {
         Admin admin = adminService.login(reqDTO);
-        session.setAttribute("admin", admin);
+
+        SessionAdmin sessionAdmin = new SessionAdmin(admin.getId(), admin.getLoginId());
+        session.setAttribute("sessionAdmin", sessionAdmin);
         return "redirect:movie-list";
     }
 
