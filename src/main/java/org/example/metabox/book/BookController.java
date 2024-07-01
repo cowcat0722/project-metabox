@@ -3,6 +3,7 @@ package org.example.metabox.book;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.example.metabox._core.util.ApiUtil;
 import org.example.metabox.user.SessionGuest;
 import org.example.metabox.user.SessionUser;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -49,15 +50,14 @@ public class BookController {
     public String bookForm(HttpServletRequest request) {
         BookResponse.BookDTO respDTO = bookService.theaterAreaList();
         request.setAttribute("model", respDTO);
-        System.out.println(respDTO);
         return "book/book-form";
     }
 
-//    @GetMapping("/book-form-sub-list-ajax")
-//    public ResponseEntity<?> bookFormSubList(@RequestParam(value = "areaCode") String areaCode) {
-//        List<String> respDTO = bookService.bookFormSubList(areaCode);
-//        return ResponseEntity.ok(new ApiUtil<>(respDTO));
-//    }
+    @GetMapping("/book-form-theater-ajax")
+    public ResponseEntity<?> bookFormSubList(@RequestParam(value = "areaCode") String areaCode) {
+        List<String> respDTO = bookService.bookFormSubList(areaCode);
+        return ResponseEntity.ok(new ApiUtil<>(respDTO));
+    }
 
     @GetMapping("/seat-form/{screeningInfoId}")
     public String seatForm(HttpServletRequest request, @PathVariable int screeningInfoId) {
