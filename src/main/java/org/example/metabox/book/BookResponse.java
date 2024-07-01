@@ -158,24 +158,12 @@ public class BookResponse {
         private class TheaterAreaDTO {
             private String areaCode;
             private String areaName;
-            private List<TheaterNameDTO> theaterNameDTOList;
 
             public TheaterAreaDTO(String areaCode, List<Theater> theaters) {
                 this.areaCode = areaCode;
                 this.areaName = theaters.isEmpty() ? "" : theaters.get(0).getAreaName();
-                this.theaterNameDTOList = theaters.stream().map(TheaterNameDTO::new).collect(Collectors.toList());
             }
 
-            @Data
-            private class TheaterNameDTO {
-                private int theaterId;
-                private String theaterName;
-
-                public TheaterNameDTO(Theater theater) {
-                    this.theaterId = theater.getId();
-                    this.theaterName = theater.getName();
-                }
-            }
         }
     }
 }

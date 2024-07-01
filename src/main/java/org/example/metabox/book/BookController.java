@@ -3,7 +3,6 @@ package org.example.metabox.book;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.example.metabox._core.util.FormatUtil;
 import org.example.metabox.user.SessionGuest;
 import org.example.metabox.user.SessionUser;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -11,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -48,10 +46,7 @@ public class BookController {
 
     //  TODO :  로그인 유저만 이용할 수 있도록 interceptor
     @GetMapping("/book-form")
-    public String bookForm(HttpServletRequest request, @RequestParam(value = "theaterId", required = false) Integer theaterId, @RequestParam(value = "movieId", required = false) Integer movieId, @RequestParam(value = "date", required = false) LocalDate date) {
-        if (date == null) {
-            date = FormatUtil.currentDate();
-        }
+    public String bookForm(HttpServletRequest request) {
         BookResponse.BookDTO respDTO = bookService.theaterAreaList();
         request.setAttribute("model", respDTO);
         System.out.println(respDTO);

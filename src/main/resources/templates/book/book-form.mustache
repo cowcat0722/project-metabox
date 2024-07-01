@@ -1,5 +1,5 @@
 {{> layout/header}}
-
+<!-- 이 페이지 박찬혁만 건들기-->
 <style>
     body {
         background-color: #ffffff;
@@ -137,42 +137,9 @@
         border-radius: 5px;
     }
 
-    .info-bar .btn-nav:hover {
-        background-color: #555;
-    }
-
-    @media (max-width: 992px) {
-        .list-container {
-            flex-direction: column;
-        }
-
-        .list-group {
-            border-right: none;
-            border-bottom: 1px solid #ddd;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .list-group {
-            min-width: 100%;
-            border-bottom: none;
-        }
-    }
-
-
 </style>
 <style>
 
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-
-    .grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-
-    }
 
     .section {
         border: 1px solid #ddd;
@@ -185,7 +152,7 @@
         border-bottom: #4b1b3a 1px solid;
     }
 
-    button {
+    .onclickbtn {
         display: block;
         width: 100%;
         margin-bottom: 10px;
@@ -202,140 +169,246 @@
     }
 </style>
 
-<div class="container my-5">
-    <div class="grid">
-        <div class="section" id="regionSection">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<style>
+
+    .out-box {
+        display: flex;
+        padding: 20px;
+    }
+
+    .in-box {
+        width: 300px;
+    }
+
+    .outer-box {
+        display: flex;
+        justify-content: center;
+    }
+</style>
+
+<div class="outer-box">
+    <div class="out-box">
+        <div class="in-box section">
             <h2>지역</h2>
-            <!-- 지역 버튼들이 여기에 동적으로 추가됩니다 -->
+            <div id="box1">
+                {{#model.theaterAreaDTOList}}
+                    <div class="onclickbtn" onclick="b1({{areaCode}})">{{areaName}}</div>
+                {{/model.theaterAreaDTOList}}
+            </div>
         </div>
-        <div class="section" id="theaterSection">
+        <div class="in-box section">
             <h2>극장</h2>
-            <!-- 극장 버튼들이 여기에 동적으로 추가됩니다 -->
+            <div id="box2">
+
+            </div>
         </div>
-        <div class="section" id="movieSection">
+        <div class="in-box section">
             <h2>영화</h2>
-            <!-- 영화 버튼들이 여기에 동적으로 추가됩니다 -->
+            <div id="box3">
+
+            </div>
         </div>
-        <div class="section" id="timeSection">
-            <h2>상영 시간</h2>
-            <!-- 상영 시간들이 여기에 동적으로 추가됩니다 -->
+        <div class="in-box section">
+            <h2>상영시간</h2>
+            <div id="box4">
+
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    const movieData = {
-        '서울': {
-            'METABOX 강남': {
-                '인사이드아웃2': ['16:00'],
-            },
-            'METABOX 강남': {
-                '인사이드아웃2': ['16:00'],
-            },
-        },
-        '경기': {
-            '강변': {
-                '하이재킹': ['10:00'],
-            },
-        },
-        '인천': {
-            '김대일구': {
-                '북극곰북극곰의모난원': ['12:00'],
-            },
-        },
-        '강원': {
-            '구로': {
-                '챔피언키즈:프리킥의달인': ['14:00'],
-            },
-        },
-        '대전/충청': {
-            '대학로': {
-                '드라이브': ['16:00'],
-            },
-        },
-        '대구': {
-            '동대문': {
-                '갯머슴': ['18:00'],
-            },
-        },
-        '부산/울산': {
-            '동춘': {
-                '타로': ['20:00'],
-            },
-        },
-        '경상': {
-            '명동': {
-                '존노브인터체스트': ['22:00'],
-            },
-        },
-        '광주/전라/제주': {
-            '명동': {
-                '존노브인터체스트': ['22:00'],
-            },
-        },
-    };
+    let theaterList = [
+        {id: 1, name: "메타박스 강남"},
+        {id: 2, name: "메타박스 강변"}
+    ];
+    let movieList = [
+        {id: 1, name: "스파이더맨"},
+        {id: 2, name: "인사이드아웃2"},
+        {id: 3, name: "밤낚시"},
+    ];
+    let timeList = [
+        {id: 1, name: "12:00"},
+        {id: 2, name: "15:00"},
+        {id: 3, name: "18:00"},
+    ];
 
-    let selectedRegion, selectedTheater, selectedMovie;
-
-    function createButton(text, onClick) {
-        const button = document.createElement('button');
-        button.textContent = text;
-        button.onclick = onClick;
-        return button;
+    function b1(loc) {
+        theaterRender(loc);
     }
 
-    function updateSection(sectionId, items, onItemClick) {
-        const section = document.getElementById(sectionId);
-        section.innerHTML = `<h2>${section.querySelector('h2').textContent}</h2>`;
-        items.forEach(item => {
-            const button = createButton(item, () => onItemClick(item));
-            section.appendChild(button);
+    function theaterRender(loc) {
+        $("#box2").empty();
+        $("#box3").empty();
+        $("#box4").empty();
+        // fetch 통신 - json -> js object -> theaterList (id로 통신)
+
+        theaterList.forEach((t) => {
+            $("#box2").append(`<div class="onclickbtn" onclick="movieRender(${t.id})">${t.name}</div>`);
         });
     }
 
-    function selectRegion(region) {
-        selectedRegion = region;
-        selectedTheater = null;
-        selectedMovie = null;
-        updateSection('regionSection', Object.keys(movieData), selectRegion);
-        updateSection('theaterSection', Object.keys(movieData[region]), selectTheater);
-        updateSection('movieSection', [], () => {
-        });
-        updateSection('timeSection', [], () => {
-        });
-        selectButton('regionSection', region);
-    }
-
-    function selectTheater(theater) {
-        selectedTheater = theater;
-        selectedMovie = null;
-        updateSection('theaterSection', Object.keys(movieData[selectedRegion]), selectTheater);
-        updateSection('movieSection', Object.keys(movieData[selectedRegion][theater]), selectMovie);
-        updateSection('timeSection', [], () => {
-        });
-        selectButton('theaterSection', theater);
-    }
-
-    function selectMovie(movie) {
-        selectedMovie = movie;
-        updateSection('movieSection', Object.keys(movieData[selectedRegion][selectedTheater]), selectMovie);
-        updateSection('timeSection', movieData[selectedRegion][selectedTheater][movie], () => {
-        });
-        selectButton('movieSection', movie);
-    }
-
-    function selectButton(sectionId, text) {
-        const buttons = document.querySelectorAll(`#${sectionId} button`);
-        buttons.forEach(button => {
-            if (button.textContent === text) {
-                button.classList.add('selected');
-            } else {
-                button.classList.remove('selected');
-            }
+    function movieRender(id) {
+        $("#box3").empty();
+        $("#box4").empty();
+        // fetch 통신 - json -> js object -> movieList (id로 통신)
+        movieList.forEach((t) => {
+            $("#box3").append(`<div class="onclickbtn" onclick="timeRender(${t.id})">${t.name}</div>`);
         });
     }
 
-    // 초기 지역 목록 표시
-    updateSection('regionSection', Object.keys(movieData), selectRegion);
+    function timeRender() {
+        $("#box4").empty();
+// fetch 통신 - json -> js object -> movieList (id로 통신)
+        timeList.forEach((t) => {
+            $("#box4").append(`<div class="onclickbtn" onclick="complete(${t.id})">${t.name}</div>`);
+        });
+    }
+
+    function complete(id) {
+        alert(id);
+        location.href = "특정페이지로 이동";
+    }
+
 </script>
+
+<!--<div class="container my-5">-->
+<!--    <div class="grid">-->
+<!--        <div class="section" id="regionSection">-->
+<!--            <h2>지역</h2>-->
+<!--            &lt;!&ndash; 지역 버튼들이 여기에 동적으로 추가됩니다 &ndash;&gt;-->
+<!--        </div>-->
+<!--        <div class="section" id="theaterSection">-->
+<!--            <h2>극장</h2>-->
+<!--            &lt;!&ndash; 극장 버튼들이 여기에 동적으로 추가됩니다 &ndash;&gt;-->
+<!--        </div>-->
+<!--        <div class="section" id="movieSection">-->
+<!--            <h2>영화</h2>-->
+<!--            &lt;!&ndash; 영화 버튼들이 여기에 동적으로 추가됩니다 &ndash;&gt;-->
+<!--        </div>-->
+<!--        <div class="section" id="timeSection">-->
+<!--            <h2>상영 시간</h2>-->
+<!--            &lt;!&ndash; 상영 시간들이 여기에 동적으로 추가됩니다 &ndash;&gt;-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<script>-->
+<!--    const movieData = {-->
+<!--        '서울': {-->
+<!--            'METABOX 강남': {-->
+<!--                '인사이드아웃2': ['16:00'],-->
+<!--            },-->
+<!--            'METABOX 강남': {-->
+<!--                '인사이드아웃2': ['16:00'],-->
+<!--            },-->
+<!--        },-->
+<!--        '경기': {-->
+<!--            '강변': {-->
+<!--                '하이재킹': ['10:00'],-->
+<!--            },-->
+<!--        },-->
+<!--        '인천': {-->
+<!--            '김대일구': {-->
+<!--                '북극곰북극곰의모난원': ['12:00'],-->
+<!--            },-->
+<!--        },-->
+<!--        '강원': {-->
+<!--            '구로': {-->
+<!--                '챔피언키즈:프리킥의달인': ['14:00'],-->
+<!--            },-->
+<!--        },-->
+<!--        '대전/충청': {-->
+<!--            '대학로': {-->
+<!--                '드라이브': ['16:00'],-->
+<!--            },-->
+<!--        },-->
+<!--        '대구': {-->
+<!--            '동대문': {-->
+<!--                '갯머슴': ['18:00'],-->
+<!--            },-->
+<!--        },-->
+<!--        '부산/울산': {-->
+<!--            '동춘': {-->
+<!--                '타로': ['20:00'],-->
+<!--            },-->
+<!--        },-->
+<!--        '경상': {-->
+<!--            '명동': {-->
+<!--                '존노브인터체스트': ['22:00'],-->
+<!--            },-->
+<!--        },-->
+<!--        '광주/전라/제주': {-->
+<!--            '명동': {-->
+<!--                '존노브인터체스트': ['22:00'],-->
+<!--            },-->
+<!--        },-->
+<!--    };-->
+
+<!--    let selectedRegion, selectedTheater, selectedMovie;-->
+
+<!--    function createButton(text, onClick) {-->
+<!--        const button = document.createElement('button');-->
+<!--        button.textContent = text;-->
+<!--        button.onclick = onClick;-->
+<!--        return button;-->
+<!--    }-->
+
+<!--    function updateSection(sectionId, items, onItemClick) {-->
+<!--        const section = document.getElementById(sectionId);-->
+<!--        section.innerHTML = `<h2>${section.querySelector('h2').textContent}</h2>`;-->
+<!--        items.forEach(item => {-->
+<!--            const button = createButton(item, () => onItemClick(item));-->
+<!--            section.appendChild(button);-->
+<!--        });-->
+<!--    }-->
+
+<!--    function selectRegion(region) {-->
+<!--        selectedRegion = region;-->
+<!--        selectedTheater = null;-->
+<!--        selectedMovie = null;-->
+<!--        updateSection('regionSection', Object.keys(movieData), selectRegion);-->
+<!--        updateSection('theaterSection', Object.keys(movieData[region]), selectTheater);-->
+<!--        updateSection('movieSection', [], () => {-->
+<!--        });-->
+<!--        updateSection('timeSection', [], () => {-->
+<!--        });-->
+<!--        selectButton('regionSection', region);-->
+<!--    }-->
+
+<!--    function selectTheater(theater) {-->
+<!--        selectedTheater = theater;-->
+<!--        selectedMovie = null;-->
+<!--        updateSection('theaterSection', Object.keys(movieData[selectedRegion]), selectTheater);-->
+<!--        updateSection('movieSection', Object.keys(movieData[selectedRegion][theater]), selectMovie);-->
+<!--        updateSection('timeSection', [], () => {-->
+<!--        });-->
+<!--        selectButton('theaterSection', theater);-->
+<!--    }-->
+
+<!--    function selectMovie(movie) {-->
+<!--        selectedMovie = movie;-->
+<!--        updateSection('movieSection', Object.keys(movieData[selectedRegion][selectedTheater]), selectMovie);-->
+<!--        updateSection('timeSection', movieData[selectedRegion][selectedTheater][movie], () => {-->
+<!--        });-->
+<!--        selectButton('movieSection', movie);-->
+<!--    }-->
+
+<!--    function selectButton(sectionId, text) {-->
+<!--        const buttons = document.querySelectorAll(`#${sectionId} button`);-->
+<!--        buttons.forEach(button => {-->
+<!--            if (button.textContent === text) {-->
+<!--                button.classList.add('selected');-->
+<!--            } else {-->
+<!--                button.classList.remove('selected');-->
+<!--            }-->
+<!--        });-->
+<!--    }-->
+
+<!--    // 초기 지역 목록 표시-->
+<!--    updateSection('regionSection', Object.keys(movieData), selectRegion);-->
+<!--</script>-->
 {{> layout/footer}}
