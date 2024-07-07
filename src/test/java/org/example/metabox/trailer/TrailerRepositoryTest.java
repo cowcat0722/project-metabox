@@ -22,7 +22,6 @@ public class TrailerRepositoryTest {
         Optional<Trailer> trailer = trailerRepository.findById(trailerId);
 
         // then
-        System.out.println("트레일러 " + trailer.isPresent());
         trailer.ifPresent(value -> System.out.println("트레일러 데이터: " + value));
     }
 

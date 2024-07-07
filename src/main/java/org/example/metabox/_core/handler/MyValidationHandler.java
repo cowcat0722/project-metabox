@@ -16,7 +16,6 @@ public class MyValidationHandler {
     // PointCut
     public void myAOP(JoinPoint jp) {
         Object[] args = jp.getArgs(); // Args: 파라미터 -> object를 리턴
-        System.out.println("크기 : " + args.length);
 
         for (Object arg : args) {
 

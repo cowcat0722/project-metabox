@@ -52,13 +52,11 @@ public class UserService {
     @Transactional
     public List<UserResponse.TheaterNameDTO> myScrapSave(Integer sessionUserId, List<UserRequest.TheaterScrapDTO> reqDTOs) {
         List<Integer> theaterIds = reqDTOs.stream().mapToInt(value -> value.getTheaterNameId()).boxed().toList();
-//        System.out.println("아이디 뽑기 " + theaterIds);
 
         // 세션에서 받아오는게 더 나은가
         User user = userRepository.findById(sessionUserId).orElseThrow(() -> new Exception404("유저 못찾음"));
         // 존재하는지 한 번 더 확인
         Boolean userExist = theaterScrapRepository.findByExistUserId(user.getId());
-//        System.out.println("존재하나 " + userExist);
 
         if (userExist) {
             // 기존 스크랩 삭제 (유저에 있는 것 모두 삭제 되어야함! )
@@ -81,16 +79,13 @@ public class UserService {
 
         //1위 영화
         Integer topMovieId = movieQueryRepository.firstRankMovie();
-        System.out.println("영화 가져오기: " + topMovieId);
 
         // 영화의 트레일러 찾기
         Trailer oneTrailer = trailerRepository.findById(topMovieId)
                 .orElseThrow(() -> new RuntimeException("예매율 1위의 트레일러가 없습니다."));
-        System.out.println("트레일러 가져오기: ");
 
 
         List<UserResponse.MainChartDTO.MainMovieChartDTO> movieChartDTOS = movieQueryRepository.getMainMovieChart();
-        System.out.println("쿼리 확인용 = " + movieChartDTOS);
 
 
 
@@ -102,34 +97,26 @@ public class UserService {
 
         // 상영예정작
         List<UserResponse.MainChartDTO.ToBeChartDTO> toBeChartDTOS = movieQueryRepository.getToBeChart();
-//        System.out.println("상영예정작 = " + toBeChartDTOS);
 
         UserResponse.MainChartDTO mainChartDTO = UserResponse.MainChartDTO.builder()
                 .movieCharts(movieChartDTOS)
                 .toBeCharts(toBeChartDTOS)
                 .trailerId(oneTrailer.getId())
                 .build();
-        System.out.println("예매율 1위 트레일러 ID:" + oneTrailer.getId());
         return mainChartDTO;
     }
 
     // 게스트 예매 조회
     @Transactional
     public UserResponse.GuestCheckDTO findGuestBook(UserRequest.GuestBookCheckDTO reqDTO) {
-        System.out.println("reqDTO33 = " + reqDTO);
         UserResponse.GuestCheckDTO.UserDTO guest = guestRepository.findByGuest(reqDTO.getName(), reqDTO.getPassword(), reqDTO.getPhone(), reqDTO.getBookNumb())
                 .orElseThrow(() -> new ApiException400("잘못된 정보를 입력하셨습니다."));
-        System.out.println("guest44 = " + guest);
 
         List<UserResponse.GuestCheckDTO.SeatDTO> seatDTOs = movieQueryRepository.findGuestTicketV1(guest.getGuestId());
-        System.out.println("seatDTOs55 = " + seatDTOs);
         List<UserResponse.GuestCheckDTO.TotalPriceDTO> totalPriceDTOs = movieQueryRepository.findGuestTicketV3(guest.getGuestId());
-        System.out.println("totalPriceDTOs666 = " + totalPriceDTOs);
         List<UserResponse.GuestCheckDTO.TicketingDTO> ticketingDTOs = movieQueryRepository.findGuestTicketV2(guest.getGuestId(), totalPriceDTOs, seatDTOs);
-        System.out.println("ticketingDTOs77777 = " + ticketingDTOs);
 
         UserResponse.GuestCheckDTO guestCheckDTO = new UserResponse.GuestCheckDTO(guest, ticketingDTOs);
-        System.out.println("guestCheckDTO8888 = " + guestCheckDTO);
 
         return guestCheckDTO;
 
@@ -144,16 +131,12 @@ public class UserService {
                 .orElseThrow(() -> new Exception401("로그인이 필요한 서비스입니다."));
 
         List<UserResponse.DetailBookDTO.MovieChartDTO> movieChartDTOS = movieQueryRepository.getMovieChart();
-//        System.out.println("쿼리 확인용 " + movieChartDTOS);
         UserResponse.DetailBookDTO.UserDTO userDTO = new UserResponse.DetailBookDTO.UserDTO(userOP);
 //        //내 예매내역 중 좌석, 티켓
         List<UserResponse.DetailBookDTO.SeatDTO> seatDTOs = movieQueryRepository.findUnwatchTicketV1(sessionUser.getId());
         List<UserResponse.DetailBookDTO.TotalPriceDTO> totalPriceDTOs = movieQueryRepository.findUnwatchTicketV3(sessionUser.getId());
         List<UserResponse.DetailBookDTO.TicketingDTO> ticketingDTOs = movieQueryRepository.findUnwatchTicketV2(sessionUser.getId(), totalPriceDTOs, seatDTOs);
 
-        System.out.println("1111" + seatDTOs);
-//        System.out.println("2222" + ticketingDTOs);
-        System.out.println("3333" + totalPriceDTOs );
 
         // 상영관 가져오기
         List<Theater> theaterList = theaterRepository.findAll();
@@ -181,7 +164,6 @@ public class UserService {
 
         // 스크랩
         List<TheaterScrap> scraps = theaterScrapRepository.findByUserId(sessionUser.getId());
-//        System.out.println("스크랩 " + scraps);   // 스크랩 [TheaterScrap(id=4), TheaterScrap(id=5), TheaterScrap(id=6)]
         List<UserResponse.DetailBookDTO.TheaterScrapDTO> theaterScrapDTOS = scraps.stream().map(theaterScrap ->
                 new UserResponse.DetailBookDTO.TheaterScrapDTO(theaterScrap.getTheater().getId(), theaterScrap.getTheater().getName())).toList();
 
@@ -205,7 +187,6 @@ public class UserService {
 
         UserResponse.MyPageHomeDTO.UserDTO userDTO = new UserResponse.MyPageHomeDTO.UserDTO(userOP);
         List<UserResponse.MyPageHomeDTO.TicketingDTO> ticketingDTOS = movieQueryRepository.findMyTicketing(sessionUser.getId());
-        System.out.println("ticketingDTOS = " + ticketingDTOS);
 
         //개수파악 (0건 <- 여기 뿌릴라고)
         int ticketCount = ticketingDTOS.size();
@@ -221,7 +202,6 @@ public class UserService {
                 .distinct()
                 .collect(Collectors.toList());
 
-//        System.out.println("theaterDistinct = " + theaterDistinct);
 
         // METABOX 강남 METABOX 여수 .. 이런 것이 지역별로 맞게 나와야함 . filter 사용
         List<UserResponse.MyPageHomeDTO.TheaterDTO> theaterDTOS = new ArrayList<>();
@@ -238,7 +218,6 @@ public class UserService {
         }
 
         List<TheaterScrap> scraps = theaterScrapRepository.findByUserId(sessionUser.getId());
-        System.out.println("스크랩 " + scraps);   // 스크랩 [TheaterScrap(id=4), TheaterScrap(id=5), TheaterScrap(id=6)]
         List<UserResponse.MyPageHomeDTO.TheaterScrapDTO> theaterScrapDTOS = scraps.stream().map(theaterScrap ->
                 new UserResponse.MyPageHomeDTO.TheaterScrapDTO(theaterScrap.getTheater().getId(), theaterScrap.getTheater().getName())).toList();
 
@@ -315,7 +294,6 @@ public class UserService {
                 UserResponse.TokenDTO.class);
 
         // 1.6 값 확인
-//        System.out.println(response.getBody().toString());
         String accessToken = response.getBody().getAccessToken();
 
         // 2. 토큰으로 사용자 정보 받기 (PK, Email)
@@ -332,7 +310,6 @@ public class UserService {
                 request2,
                 UserResponse.KakaoUserDTO.class);
 
-//        System.out.println("response2 : " + response2.getBody().toString());
 
         // 3. 해당정보로 DB조회 (있을수, 없을수)
         String nickname = "kakao_" + response2.getBody().getId();
@@ -342,10 +319,8 @@ public class UserService {
         // 4. 있으면? - 조회된 유저정보 리턴
         if (userPS != null) {
             SessionUser sessionUser = new SessionUser(userPS, accessToken);
-//            System.out.println("어? 유저가 있네? 강제로그인 진행");
             return sessionUser;
         } else {
-//            System.out.println("어? 유저가 없네? 강제회원가입 and 강제로그인 진행");
 
             User user = User.builder()
                     .nickname(nickname)
@@ -392,7 +367,6 @@ public class UserService {
                 UserResponse.TokenDTO.class);
 
         // 1.6 값 확인
-//        System.out.println(response.getBody().toString());
         String accessToken = response.getBody().getAccessToken();
 
 //        // 2. 토큰으로 사용자 정보 받기 (PK, Email)
@@ -409,7 +383,6 @@ public class UserService {
                 request2,
                 UserResponse.NaverUserDTO.class);
 
-//        System.out.println("response2 : " + response2.getBody().toString());
 
 //        // 3. 해당정보로 DB조회 (있을수, 없을수)
         String nickname = "naver_" + response2.getBody().getResponse().getId();
@@ -418,11 +391,9 @@ public class UserService {
 //        // 4. 있으면? - 조회된 유저정보 리턴
         if (userPS != null) {
             SessionUser sessionUser = new SessionUser(userPS, accessToken);
-//            System.out.println("어? 유저가 있네? 강제로그인 진행");
             return sessionUser;
 
         } else {
-//            System.out.println("어? 유저가 없네? 강제회원가입 and 강제로그인 진행");
             // 5. 없으면? - 강제 회원가입
             User user = User.builder()
                     .nickname(nickname)
@@ -456,7 +427,6 @@ public class UserService {
                 String.class);
 
         // 성공 여부를 확인
-//        System.out.println("카카오 회원탈퇴 응답: " + response.getBody());
 
         userRepository.deleteByNickname(nickname);
 
@@ -473,7 +443,6 @@ public class UserService {
 
         // API 호출
         String response = rt.getForObject(url, String.class);
-//        System.out.println("네이버 회원탈퇴 결과: " + response);
 
         userRepository.deleteByNickname(nickname);
 

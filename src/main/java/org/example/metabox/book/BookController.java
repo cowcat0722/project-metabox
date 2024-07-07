@@ -54,7 +54,6 @@ public class BookController {
         }
         BookResponse.BookDTO respDTO = bookService.theaterAreaList();
         request.setAttribute("model", respDTO);
-        System.out.println(respDTO);
         return "book/book-form";
     }
 
@@ -67,7 +66,6 @@ public class BookController {
     @GetMapping("/seat-form/{screeningInfoId}")
     public String seatForm(HttpServletRequest request, @PathVariable int screeningInfoId) {
         BookResponse.BookSeatDTO respDTO = bookService.seatDetail(screeningInfoId);
-        System.out.println(respDTO);
         request.setAttribute("model", respDTO);
         return "book/seat-basic-form";
     }

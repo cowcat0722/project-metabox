@@ -39,8 +39,6 @@ public class BookService {
 
     public List<String> bookFormSubList(String areaCode) {
         List<String> respDTO = screeningInfoRepository.findSubListByAreaCode(areaCode);
-        System.out.println("안녕");
-        System.out.println(respDTO);
         return respDTO;
     }
 

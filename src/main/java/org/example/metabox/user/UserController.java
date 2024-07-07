@@ -27,7 +27,6 @@ public class UserController {
     @GetMapping("/redis/test")
     public @ResponseBody String redisTest() {
         SessionUser sessionUser = (SessionUser) rt.opsForValue().get("sessionUser");
-        System.out.println("username : " + sessionUser.getName());
         return "redis test";
     }
 
@@ -70,12 +69,9 @@ public class UserController {
     // TODO: ApiException 필요할듯?
     @PostMapping("/guest/book-check")
     public ResponseEntity<?> nonMemberCheck(@Valid @RequestBody UserRequest.GuestBookCheckDTO reqDTO, Errors errors) {
-//        System.out.println("비회원 reqDTO = " + reqDTO);
         UserResponse.GuestCheckDTO guestCheckDTO = userService.findGuestBook(reqDTO);
-        System.out.println("guestCheckDTO = " + guestCheckDTO);
 
         return ResponseEntity.ok(new ApiUtil<>(guestCheckDTO));
-//        return ResponseEntity.ok("Success");
     }
 
     @GetMapping("/mypage/home")
@@ -95,7 +91,6 @@ public class UserController {
 
         List<UserResponse.TheaterNameDTO> theaterNameDTOS = userService.myScrapSave(sessionUser.getId(), reqDTOs);
 
-        System.out.println("theaterNameDTOS = " + theaterNameDTOS);
 
         return ResponseEntity.ok(new ApiUtil(theaterNameDTOS)); // apiUtil
     }
@@ -122,7 +117,6 @@ public class UserController {
     // 일단 카카오만
     @GetMapping("/oauth/callback/kakao")
     public String oauthCallbackKakao(String code) {
-//        System.out.println("코드 받나요 : " + code);
         SessionUser sessionUser = userService.loginKakao(code);
         rt.opsForValue().set("sessionUser", sessionUser);
         session.setAttribute("sessionUser", sessionUser);
@@ -131,7 +125,6 @@ public class UserController {
 
     @GetMapping("/oauth/callback/naver")
     public String oauthCallbackNaver(String code) {
-//        System.out.println("네이버 코드 : " + code);
         SessionUser sessionUser = userService.loginNaver(code);
         rt.opsForValue().set("sessionUser", sessionUser);
         session.setAttribute("sessionUser", sessionUser);

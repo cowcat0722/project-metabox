@@ -77,7 +77,6 @@ public class TrailerController {
 
         // 파일 이름을 URL 디코딩
         String decodedFilename = URLDecoder.decode(filename, StandardCharsets.UTF_8.toString());
-        System.out.println("Decoded Filename: " + decodedFilename);
 
         // 파일 이름을 사용하여 리소스를 가져옴
         Resource resource = trailerService.getVideoRes(decodedFilename);
